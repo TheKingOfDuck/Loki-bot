@@ -7,6 +7,32 @@
 #include <taskschd.h>
 #pragma comment(lib, "taskschd.lib")
 
+#include <stdio.h>
+#include <tchar.h>
+#include "Common.h"
+
+#define _WIN32_DCOM
+
+#include <windows.h>
+#include <iostream>
+#include <stdio.h>
+#include <comdef.h>
+#include <wincred.h>
+//  Include the task header file.
+#include <taskschd.h>
+# pragma comment(lib, "taskschd.lib")
+# pragma comment(lib, "comsupp.lib")
+# pragma comment(lib, "credui.lib")
+
+#include <windows.h>
+#include <initguid.h>
+#include <ole2.h>
+#include <mstask.h>
+#include <msterr.h>
+#include <objidl.h>
+#include <wchar.h>
+#include <stdio.h>
+
 
 class CMyTaskSchedule
 {
