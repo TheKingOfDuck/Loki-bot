@@ -23,6 +23,63 @@
 
 const int LEN_NAME = 6;
 
+//获取软件描述信息
+string Common::GetFileVersion(char* strFilePath)
+{
+	DWORD dwSize;
+	DWORD dwRtn;
+	string szVersion;
+	//获取版本信息大小
+	dwSize = GetFileVersionInfoSize(strFilePath, NULL);
+	if (dwSize == 0)
+	{
+		return "";
+	}
+	char* pBuf;
+	pBuf = new char[dwSize + 1];
+	if (pBuf == NULL)
+		return "";
+	memset(pBuf, 0, dwSize + 1);
+	//获取版本信息
+	dwRtn = GetFileVersionInfo(strFilePath, NULL, dwSize, pBuf);
+	if (dwRtn == 0)
+	{
+		return "";
+	}
+	LPVOID lpBuffer = NULL;
+	UINT uLen = 0;
+	//版本资源中获取信息
+
+	dwRtn = VerQueryValue(pBuf,
+		TEXT("\\StringFileInfo\\080404b0\\FileDescription"), //0804中文
+		//04b0即1252,ANSI
+		//可以从ResourceView中的Version中BlockHeader中看到
+		//可以测试的属性
+		/*
+		CompanyName
+		FileDescription
+		FileVersion
+		InternalName
+		LegalCopyright
+		OriginalFilename
+		ProductName
+		ProductVersion
+		Comments
+		LegalTrademarks
+		PrivateBuild
+		SpecialBuild
+		*/
+		& lpBuffer,
+		&uLen);
+	if (dwRtn == 0)
+	{
+		return "";
+	}
+	szVersion = (char*)lpBuffer;
+	delete pBuf;
+	return szVersion;
+}
+
 //执行二进制文件，flag决定是否等待执行完成
 int Common::exec(const char* bin, const BOOL flag) {
 	SHELLEXECUTEINFO commend;//命令对象

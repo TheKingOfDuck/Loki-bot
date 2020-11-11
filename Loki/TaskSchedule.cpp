@@ -255,7 +255,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 		if (FAILED(hr))
 		{
 			printf("\nCannot create a TASK_TRIGGER_REGISTRATION trigger: %x", hr);
-			return 1;
+			return FALSE;
 		}
 		//2
 
@@ -266,7 +266,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			printf("Cannot get Root Folder pointer: %x", hr);
 			m_lpITS->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 		m_lpITS->Release();  // COM clean up.  Pointer is no longer used.
 		if (FAILED(hr))
@@ -274,7 +274,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			printf("Failed to CoCreate an instance of the TaskService class: %x", hr);
 			m_lpRootFolder->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		hr = pTaskDefinition->get_Triggers(&pTriggers);
@@ -284,7 +284,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			m_lpRootFolder->Release();
 			pTaskDefinition->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		hr = pTriggers->Create(TASK_TRIGGER_DAILY, &pTrigger);
@@ -293,7 +293,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			m_lpRootFolder->Release();
 			pTaskDefinition->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		IDailyTrigger* pDailyTrigger = NULL;
@@ -304,7 +304,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			m_lpRootFolder->Release();
 			pTaskDefinition->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		hr = pDailyTrigger->put_Id(_bstr_t(L"Trigger"));
@@ -317,7 +317,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pDailyTrigger->Release();
 			pTaskDefinition->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		// Add a repetition to the trigger so that it repeats
@@ -329,7 +329,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			m_lpRootFolder->Release();
 			pTaskDefinition->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//hr = pRepetitionPattern->put_Duration(_bstr_t(L"PT1440M"));//
@@ -348,7 +348,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			m_lpRootFolder->Release();
 			pTaskDefinition->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 		//3
 
@@ -460,7 +460,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 		{
 			printf("\nCoInitializeSecurity failed: %x", hr);
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//  Create an instance of the Task Service. 
@@ -476,7 +476,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 		{
 			printf("Failed to create an instance of ITaskService: %x", hr);
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//  Connect to the task service.
@@ -487,7 +487,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			printf("ITaskService::Connect failed: %x", hr);
 			pService->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//  ------------------------------------------------------
@@ -500,7 +500,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			printf("Cannot get Root folder pointer: %x", hr);
 			pService->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//  If the same task exists, remove it.
@@ -527,7 +527,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//  Create the action, specifying that it is an executable action.
@@ -540,7 +540,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		IExecAction* pExecAction = NULL;
@@ -554,7 +554,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//  Set the path of the executable to lpszProgramPath.
@@ -566,7 +566,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 
@@ -605,7 +605,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 		if (FAILED(hr))
 		{
 			printf("\nCannot create a TASK_TRIGGER_REGISTRATION trigger: %x", hr);
-			return 1;
+			return FALSE;
 		}
 		//2
 
@@ -616,7 +616,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			printf("Cannot get Root Folder pointer: %x", hr);
 			pService->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		pService->Release();  // COM clean up.  Pointer is no longer used.
@@ -626,7 +626,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			printf("Failed to CoCreate an instance of the TaskService class: %x", hr);
 			pRootFolder->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		hr = pTask->get_Triggers(&pTriggers);
@@ -636,7 +636,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		hr = pTriggers->Create(TASK_TRIGGER_DAILY, &pTrigger);
@@ -645,7 +645,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		IDailyTrigger* pDailyTrigger = NULL;
@@ -656,7 +656,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		hr = pDailyTrigger->put_Id(_bstr_t(L"Trigger"));
@@ -669,7 +669,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pDailyTrigger->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		// Add a repetition to the trigger so that it repeats
@@ -681,7 +681,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 
 		//hr = pRepetitionPattern->put_Duration(_bstr_t(L"PT1440M"));//
@@ -700,7 +700,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return 1;
+			return FALSE;
 		}
 		//3
 
@@ -723,7 +723,7 @@ BOOL CMyTaskSchedule::NewTask(char* lpszTaskName, char* lpszProgramPath, char* l
 			pRootFolder->Release();
 			pTask->Release();
 			CoUninitialize();
-			return false;
+			return FALSE;
 		}
 
 		printf("\n Success! Task successfully registered. ");
